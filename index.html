@@ -1,0 +1,85 @@
+<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ميزان | MIZAN AI</title>
+<link href="https://fonts.googleapis.com/css2?family=Readex+Pro:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#eef3f0;--ink:#10201c;--mut:#5b6e68;--card:#fff;--line:#d3ddd8;--brass:#a8741a;--ok:#1f7a5a;--warn:#b26a00;--bad:#a63d3d}
+@media(prefers-color-scheme:dark){:root{--bg:#0d1714;--ink:#e8f0ec;--mut:#98ada6;--card:#14231f;--line:#274038;--brass:#d9a441}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:400 16px/1.7 'Readex Pro',system-ui,sans-serif}
+header{display:flex;align-items:center;gap:12px;padding:12px 16px;border-bottom:1px solid var(--line);position:sticky;top:0;background:var(--bg);z-index:5}
+.logo{font-weight:700;font-size:20px;flex:1}.logo i{font-style:normal;color:var(--brass)}
+select,button,input,textarea{font:inherit;color:inherit}select,input,textarea{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:8px 12px}
+button{cursor:pointer;border:0;border-radius:10px;padding:10px 18px;background:var(--ink);color:var(--bg);font-weight:600}button.ghost{background:none;color:var(--ink);border:1px solid var(--line)}
+:focus-visible{outline:3px solid var(--brass);outline-offset:2px}
+main{max-width:820px;margin:0 auto;padding:16px}.login{max-width:420px;margin:12vh auto;display:grid;gap:12px;text-align:center}
+.login h1{font-size:34px;margin:0}.login p{color:var(--mut);margin:0}
+#feed{display:grid;gap:16px;padding-bottom:150px}.u{justify-self:start;background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:14px;max-width:85%}
+.a{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;display:grid;gap:12px}
+.a h4{margin:0;font-size:14px;color:var(--brass)}.a p{margin:0}.tags{display:flex;gap:8px;flex-wrap:wrap}
+.tag{font-size:12px;border:1px solid var(--line);border-radius:99px;padding:2px 10px;color:var(--mut)}
+.scale{display:flex;gap:4px;align-items:center}.scale b{width:26px;height:6px;border-radius:3px;background:var(--line)}
+.high b:nth-child(-n+4){background:var(--ok)}.medium b:nth-child(-n+3){background:var(--brass)}.limited b:nth-child(-n+2){background:var(--warn)}.insufficient b:nth-child(1){background:var(--bad)}
+blockquote{margin:0;padding:6px 12px;border-inline-start:3px solid var(--brass);background:var(--bg);border-radius:6px}
+.ref{font-size:14px;border-top:1px dashed var(--line);padding-top:8px}.ref a{color:var(--brass)}
+.warn{background:#b26a001a;border:1px solid var(--warn);border-radius:10px;padding:10px 12px}.note{font-size:12px;color:var(--mut)}
+.bar{position:fixed;inset-inline:0;bottom:0;background:var(--bg);border-top:1px solid var(--line);padding:10px}
+.bar>div{max-width:820px;margin:auto;display:grid;gap:8px}.row{display:flex;gap:8px;flex-wrap:wrap}.row textarea{flex:1;min-width:200px;resize:none}
+.hide{display:none!important}@media(prefers-reduced-motion:no-preference){.a{animation:in .25s}@keyframes in{from{opacity:0}}}
+</style></head><body>
+<header><div class="logo">ميزان <i>|</i> MIZAN AI</div>
+<select id="lang" aria-label="Language"><option value="ar">العربية</option><option value="en">English</option><option value="fr">Français</option><option value="de">Deutsch</option><option value="es">Español</option><option value="pt">Português</option><option value="hi">हिन्दी</option><option value="ja">日本語</option><option value="zh">中文</option></select>
+<button class="ghost hide" id="out"></button></header>
+<main>
+<section class="login" id="login"><h1 data-t="h"></h1><p data-t="tag"></p>
+<input id="em" type="email" autocomplete="email" data-p="email"><button id="send" data-t="send"></button>
+<input id="cd" inputmode="numeric" maxlength="6" class="hide" data-p="code"><button id="ver" class="hide" data-t="verify"></button>
+<p id="msg" class="note" role="status"></p>
+<p class="note" data-t="ai"></p></section>
+<section id="app" class="hide"><div id="feed"></div>
+<div class="bar"><div><div class="row">
+<select id="mode"><option value="ask" data-t="ask"></option><option value="verify" data-t="chk"></option></select>
+<select id="depth"><option value="quick" data-t="d1"></option><option value="research" selected data-t="d2"></option><option value="academic" data-t="d3"></option><option value="teaching" data-t="d4"></option><option value="fiqh_compare" data-t="d5"></option></select></div>
+<div class="row"><textarea id="q" rows="2" data-p="ph"></textarea><button id="go" data-t="go"></button></div>
+<p class="note" data-t="disc"></p></div></div></section></main>
+<script>
+const T={
+ar:{h:'ميزان',tag:'لا نسأل فقط ماذا يقول الذكاء الاصطناعي، بل: ما الدليل؟',email:'بريدك الإلكتروني',send:'أرسل كود التأكيد',code:'كود التأكيد (6 أرقام)',verify:'تأكيد الدخول',ai:'أداة مدعومة بالذكاء الاصطناعي، وليست مفتيًا ولا عالمًا بشريًا.',ask:'سؤال',chk:'تحقق من نص',d1:'سريعة',d2:'بحثية',d3:'أكاديمية',d4:'تعليمية',d5:'مقارنة فقهية',ph:'اكتب سؤالك أو النص المراد التحقق منه…',go:'إرسال',disc:'المعلومات عامة ولا تغني عن سؤال مفتٍ أو عالم مختص. راجع المصادر قبل الاعتماد.',out:'خروج',sum:'الخلاصة',conf:'درجة الثقة',q:'القرآن',s:'السنة',i:'الإجماع',qs:'القياس',dis:'مواضع الخلاف',pre:'الراجح وسببه',refs:'المصادر',ref:'يحتاج إلى سؤال جهة مؤهلة',lim:'حدود الجزم',wait:'جارٍ البحث والتحقق…',err:'تعذّر الاتصال، حاول مجددًا.',sent:'تم الإرسال، راجع بريدك.',bad:'الكود غير صحيح أو منتهٍ.',verify_note:'الصفحة/الجزء: تحقق منها في المصدر'},
+en:{h:'MIZAN',tag:'Not just what AI says — but: what is the evidence?',email:'Your email',send:'Send verification code',code:'6-digit code',verify:'Confirm sign-in',ai:'AI-supported tool. Not a mufti or a human scholar.',ask:'Ask',chk:'Verify a text',d1:'Quick',d2:'Research',d3:'Academic',d4:'Teaching',d5:'Fiqh comparison',ph:'Type a question or a text to verify…',go:'Send',disc:'General information; it does not replace a qualified scholar. Check sources before relying on it.',out:'Sign out',sum:'Summary',conf:'Confidence',q:'Quran',s:'Sunnah',i:'Ijma (consensus)',qs:'Qiyas (analogy)',dis:'Scholarly disagreement',pre:'Preponderant view & why',refs:'Sources',ref:'Refer to a qualified authority',lim:'Limits',wait:'Researching and verifying…',err:'Connection failed, try again.',sent:'Sent — check your inbox.',bad:'Wrong or expired code.',verify_note:'Volume/page: verify in the source'},
+fr:{h:'MIZAN',tag:'Pas seulement ce que dit l’IA, mais : quelle est la preuve ?',email:'Votre e-mail',send:'Envoyer le code',code:'Code à 6 chiffres',verify:'Confirmer',ai:'Outil assisté par IA, ni mufti ni savant humain.',ask:'Question',chk:'Vérifier un texte',d1:'Rapide',d2:'Recherche',d3:'Académique',d4:'Pédagogique',d5:'Comparaison fiqh',ph:'Posez une question ou collez un texte…',go:'Envoyer',disc:'Information générale ; ne remplace pas un savant qualifié.',out:'Déconnexion',sum:'Résumé',conf:'Confiance',q:'Coran',s:'Sunna',i:'Ijma',qs:'Qiyas',dis:'Divergences',pre:'Avis retenu et raisons',refs:'Sources',ref:'Consulter une autorité qualifiée',lim:'Limites',wait:'Recherche en cours…',err:'Échec, réessayez.',sent:'Envoyé, vérifiez votre boîte.',bad:'Code incorrect ou expiré.',verify_note:'Tome/page : à vérifier dans la source'},
+de:{h:'MIZAN',tag:'Nicht nur was die KI sagt, sondern: Was ist der Beleg?',email:'Deine E-Mail',send:'Code senden',code:'6-stelliger Code',verify:'Bestätigen',ai:'KI-gestütztes Werkzeug, kein Mufti und kein Gelehrter.',ask:'Frage',chk:'Text prüfen',d1:'Kurz',d2:'Recherche',d3:'Akademisch',d4:'Lehrreich',d5:'Fiqh-Vergleich',ph:'Frage oder Text eingeben…',go:'Senden',disc:'Allgemeine Information; ersetzt keinen qualifizierten Gelehrten.',out:'Abmelden',sum:'Zusammenfassung',conf:'Vertrauen',q:'Koran',s:'Sunna',i:'Idschma',qs:'Qiyas',dis:'Meinungsverschiedenheit',pre:'Überwiegende Ansicht',refs:'Quellen',ref:'Qualifizierte Stelle fragen',lim:'Grenzen',wait:'Recherche läuft…',err:'Fehler, erneut versuchen.',sent:'Gesendet, prüfe dein Postfach.',bad:'Falscher oder abgelaufener Code.',verify_note:'Band/Seite: in der Quelle prüfen'},
+es:{h:'MIZAN',tag:'No solo lo que dice la IA, sino: ¿cuál es la prueba?',email:'Tu correo',send:'Enviar código',code:'Código de 6 dígitos',verify:'Confirmar',ai:'Herramienta con IA; no es un muftí ni un erudito humano.',ask:'Pregunta',chk:'Verificar texto',d1:'Rápida',d2:'Investigación',d3:'Académica',d4:'Didáctica',d5:'Comparación fiqh',ph:'Escribe una pregunta o un texto…',go:'Enviar',disc:'Información general; no sustituye a un erudito cualificado.',out:'Salir',sum:'Resumen',conf:'Confianza',q:'Corán',s:'Sunna',i:'Iyma',qs:'Qiyas',dis:'Desacuerdo',pre:'Postura preferida y razones',refs:'Fuentes',ref:'Consultar a una autoridad cualificada',lim:'Límites',wait:'Investigando…',err:'Error, reintenta.',sent:'Enviado, revisa tu correo.',bad:'Código incorrecto o vencido.',verify_note:'Tomo/página: verifícalo en la fuente'},
+pt:{h:'MIZAN',tag:'Não só o que a IA diz, mas: qual é a prova?',email:'Seu e-mail',send:'Enviar código',code:'Código de 6 dígitos',verify:'Confirmar',ai:'Ferramenta com IA; não é mufti nem estudioso humano.',ask:'Pergunta',chk:'Verificar texto',d1:'Rápida',d2:'Pesquisa',d3:'Acadêmica',d4:'Didática',d5:'Comparação fiqh',ph:'Digite uma pergunta ou texto…',go:'Enviar',disc:'Informação geral; não substitui um estudioso qualificado.',out:'Sair',sum:'Resumo',conf:'Confiança',q:'Alcorão',s:'Sunna',i:'Ijma',qs:'Qiyas',dis:'Divergência',pre:'Posição preferida e motivos',refs:'Fontes',ref:'Consulte uma autoridade qualificada',lim:'Limites',wait:'Pesquisando…',err:'Falha, tente de novo.',sent:'Enviado, veja seu e-mail.',bad:'Código incorreto ou expirado.',verify_note:'Volume/página: verifique na fonte'},
+hi:{h:'मीज़ान',tag:'सिर्फ़ AI क्या कहता है नहीं, बल्कि: प्रमाण क्या है?',email:'आपका ईमेल',send:'कोड भेजें',code:'6 अंकों का कोड',verify:'पुष्टि करें',ai:'AI-समर्थित टूल; न मुफ़्ती, न मानव विद्वान।',ask:'प्रश्न',chk:'पाठ जाँचें',d1:'संक्षिप्त',d2:'शोध',d3:'शैक्षणिक',d4:'शिक्षण',d5:'फ़िक़्ह तुलना',ph:'प्रश्न या जाँचने का पाठ लिखें…',go:'भेजें',disc:'सामान्य जानकारी; योग्य विद्वान का विकल्प नहीं।',out:'लॉग आउट',sum:'सारांश',conf:'विश्वसनीयता',q:'क़ुरआन',s:'सुन्नत',i:'इज्मा',qs:'क़ियास',dis:'मतभेद',pre:'राजेह मत और कारण',refs:'स्रोत',ref:'योग्य विद्वान से पूछें',lim:'सीमाएँ',wait:'खोज जारी…',err:'त्रुटि, पुनः प्रयास करें।',sent:'भेजा गया, ईमेल देखें।',bad:'कोड गलत या समाप्त।',verify_note:'खंड/पृष्ठ: स्रोत में जाँचें'},
+ja:{h:'ミーザーン',tag:'AIの答えだけでなく、根拠は何か？',email:'メールアドレス',send:'認証コードを送信',code:'6桁のコード',verify:'確認',ai:'AI支援ツールです。ムフティーや学者ではありません。',ask:'質問',chk:'文章を検証',d1:'簡潔',d2:'調査',d3:'学術',d4:'学習',d5:'法学比較',ph:'質問または検証したい文章を入力…',go:'送信',disc:'一般情報であり、資格ある学者の代わりにはなりません。',out:'ログアウト',sum:'要約',conf:'信頼度',q:'クルアーン',s:'スンナ',i:'イジュマー',qs:'キヤース',dis:'見解の相違',pre:'有力説と理由',refs:'出典',ref:'有資格者に相談してください',lim:'限界',wait:'調査中…',err:'失敗しました。再試行してください。',sent:'送信しました。',bad:'コードが違うか期限切れです。',verify_note:'巻/頁は出典で確認'},
+zh:{h:'米赞',tag:'不只是AI说了什么，而是：证据是什么？',email:'你的邮箱',send:'发送验证码',code:'6位验证码',verify:'确认登录',ai:'AI辅助工具，不是穆夫提，也不是学者。',ask:'提问',chk:'核实文本',d1:'简要',d2:'研究',d3:'学术',d4:'教学',d5:'教法比较',ph:'输入问题或需核实的文本…',go:'发送',disc:'仅为一般信息，不能替代合格学者。',out:'退出',sum:'摘要',conf:'可信度',q:'古兰经',s:'圣训',i:'公议',qs:'类比',dis:'学术分歧',pre:'倾向观点及理由',refs:'来源',ref:'请咨询合格的权威',lim:'局限',wait:'正在研究核实…',err:'连接失败，请重试。',sent:'已发送，请查收邮箱。',bad:'验证码错误或已过期。',verify_note:'卷/页：请在原始来源核对'}};
+const $=s=>document.querySelector(s),L=()=>T[$('#lang').value],tk=()=>sessionStorage.getItem('t');let hist=[];
+function applyLang(){const l=$('#lang').value;document.documentElement.lang=l;document.documentElement.dir=l=='ar'?'rtl':'ltr';localStorage.setItem('lang',l);
+document.querySelectorAll('[data-t]').forEach(e=>e.textContent=L()[e.dataset.t]);document.querySelectorAll('[data-p]').forEach(e=>e.placeholder=L()[e.dataset.p]);$('#out').textContent=L().out}
+function show(){const on=!!tk();$('#login').classList.toggle('hide',on);$('#app').classList.toggle('hide',!on);$('#out').classList.toggle('hide',!on)}
+const api=async(p,b)=>{const r=await fetch('/api/'+p,{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+(tk()||'')},body:JSON.stringify(b)});const j=await r.json();if(r.status==401){sessionStorage.clear();show()}return{ok:r.ok,j}};
+const el=(t,c,x)=>{const e=document.createElement(t);if(c)e.className=c;if(x!=null)e.textContent=x;return e};
+$('#send').onclick=async()=>{const r=await api('auth/request',{email:$('#em').value});$('#msg').textContent=r.ok?L().sent:L().err;if(r.ok)['#cd','#ver'].forEach(s=>$(s).classList.remove('hide'))};
+$('#ver').onclick=async()=>{const r=await api('auth/verify',{email:$('#em').value,code:$('#cd').value});if(r.ok){sessionStorage.setItem('t',r.j.token);show()}else $('#msg').textContent=L().bad};
+$('#out').onclick=()=>{sessionStorage.clear();hist=[];$('#feed').replaceChildren();show()};
+function sec(card,title,node){if(!node)return;const d=el('div');d.append(el('h4','',title),node);card.append(d)}
+function render(j){const t=L(),c=el('div','a');
+c.append(el('div','tags')),c.firstChild.append(el('span','tag','L-'+(j.level||'?')),el('span','tag',j.type||''));
+if(j.needs_referral)c.append(el('div','warn',t.ref+(j.referral_to?': '+j.referral_to:'')));
+sec(c,t.sum,el('p','',j.summary||''));
+const sc=el('div','scale '+(j.confidence||'insufficient'));for(let i=0;i<4;i++)sc.append(el('b'));sc.append(el('span','note',' '+(j.confidence||'')));sec(c,t.conf,sc);
+const ev=j.evidence||{},box=el('div');
+(ev.quran||[]).forEach(x=>{const b=el('blockquote');b.append(el('div','',x.text||''),el('div','note',(x.verified?'✓ ':'⚠ ')+(x.ref||'')+(x.note?' — '+x.note:'')));box.append(b)});
+(ev.sunnah||[]).forEach(x=>{const b=el('blockquote');b.append(el('div','',x.text||''),el('div','note',[x.source,x.grade].filter(Boolean).join(' — ')));box.append(b)});
+if(box.children.length)sec(c,t.q+' / '+t.s,box);
+if(ev.ijma)sec(c,t.i,el('p','',ev.ijma));if(ev.qiyas)sec(c,t.qs,el('p','',ev.qiyas));
+(j.claims||[]).forEach(x=>{const b=el('blockquote');b.append(el('div','',x.claim||x.text||''),el('div','note',[x.type,x.verdict,x.note].filter(Boolean).join(' — ')));c.append(b)});
+if(j.disagreement?.exists){const d=el('div');j.disagreement.views.forEach(v=>d.append(el('p','',`• ${v.school_or_scholar||''}: ${v.view||''} ${v.proof?'('+v.proof+')':''}`)));sec(c,t.dis,d)}
+if(j.preponderant?.view)sec(c,t.pre,el('p','',`${j.preponderant.view} — ${j.preponderant.reasons||''} ${j.preponderant.who_says?'['+j.preponderant.who_says+']':''}`));
+if((j.references||[]).length){const d=el('div');j.references.forEach(r=>{const p=el('div','ref');p.append(el('span','',[r.work,r.author,r.volume_page,r.edition,r.hadith_grade].filter(Boolean).join(' · ')));if(r.url){const a=el('a','',' ↗');a.href=r.url;a.target='_blank';a.rel='noopener';p.append(a);if(/shamela\.ws/.test(r.url)){const bt=el('button','ghost','📖');bt.onclick=async()=>{const x=await fetch('/api/shamela?url='+encodeURIComponent(r.url),{headers:{Authorization:'Bearer '+tk()}}).then(q=>q.json());p.append(el('blockquote','',x.text||'—'))};p.append(bt)}}if(r.excerpt)p.append(el('blockquote','',r.excerpt));if(!r.volume_page)p.append(el('div','note',t.verify_note));d.append(p)});sec(c,t.refs,d)}
+if(j.assumptions||j.limits)c.append(el('div','note',(j.limits||'')+' '+(j.assumptions||'')));
+c.append(el('div','note','AI · '+t.disc));$('#feed').append(c);c.scrollIntoView({behavior:'smooth'})}
+$('#go').onclick=async()=>{const q=$('#q').value.trim();if(!q)return;$('#q').value='';$('#feed').append(el('div','u',q));const w=el('div','note',L().wait);$('#feed').append(w);
+const r=await api('chat',{question:q,lang:$('#lang').value,mode:$('#mode').value,depth:$('#depth').value,history:hist});w.remove();
+if(r.ok){render(r.j);hist.push({role:'user',text:q},{role:'model',text:r.j.summary||''})}else $('#feed').append(el('div','warn',L().err))};
+$('#lang').value=localStorage.getItem('lang')||'ar';$('#lang').onchange=applyLang;applyLang();show();
+</script></body></html>
